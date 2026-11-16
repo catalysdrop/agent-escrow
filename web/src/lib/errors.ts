@@ -12,6 +12,14 @@ export function explain(error: unknown): string {
     if (revert instanceof ContractFunctionRevertedError) {
       const name = revert.data?.errorName;
       if (name === "AlreadyPaid") return "This order is already paid. Start a new order.";
+      if (name === "AlreadyExists") return "An escrow with this task id already exists. Try again — a new random id is generated each time.";
+      if (name === "NotClient") return "Only the client who created this escrow can do that.";
+      if (name === "NotAgent") return "Only the agent assigned to this escrow can do that.";
+      if (name === "NotFound") return "No escrow with that task id.";
+      if (name === "WrongStatus") return "This escrow is in the wrong state for that action.";
+      if (name === "DeadlinePassed") return "The deadline has already passed.";
+      if (name === "DeadlineNotPassed") return "The deadline hasn't passed yet.";
+      if (name === "GraceNotPassed") return "The grace period after delivery hasn't passed yet.";
       if (name === "ZeroAmount") return "The amount must be more than zero.";
       const reason = revert.reason ?? "";
       if (/invalid signature/i.test(reason)) return "The signature doesn't match this order or amount. Sign again.";

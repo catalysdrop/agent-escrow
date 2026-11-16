@@ -40,3 +40,35 @@ export const checkoutAbi = parseAbi([
   "error ZeroAmount()",
   "error ZeroAddress()",
 ]);
+
+/** AgentEscrow deployed on Aevum testnet (chain 44005) for the Builder Challenge. */
+export const AGENT_ESCROW_AEVUM_ADDRESS: Address = "0x655a895477fBb38fB4A7c279cad04A4e218F284b";
+
+/** Block the AgentEscrow deploy transaction landed in (used as the event-scan start). */
+export const AGENT_ESCROW_AEVUM_DEPLOY_BLOCK = 3302809n;
+
+/** ABI of contracts/src/AgentEscrow.sol. */
+export const agentEscrowAbi = parseAbi([
+  "function token() view returns (address)",
+  "function GRACE_PERIOD() view returns (uint64)",
+  "function createEscrow(bytes32 taskId, address agent, uint256 amount, uint64 deadline)",
+  "function markDelivered(bytes32 taskId, bytes32 proof)",
+  "function confirmRelease(bytes32 taskId)",
+  "function refund(bytes32 taskId)",
+  "function claimUnconfirmed(bytes32 taskId)",
+  "function escrowOf(bytes32 taskId) view returns ((address client, address agent, uint256 amount, uint64 deadline, uint64 deliveredAt, bytes32 proof, uint8 status))",
+  "event EscrowCreated(bytes32 indexed taskId, address indexed client, address indexed agent, uint256 amount, uint64 deadline)",
+  "event Delivered(bytes32 indexed taskId, address indexed agent, bytes32 proof)",
+  "event Released(bytes32 indexed taskId, address indexed agent, uint256 amount)",
+  "event Refunded(bytes32 indexed taskId, address indexed client, uint256 amount)",
+  "error ZeroAmount()",
+  "error ZeroAddress()",
+  "error AlreadyExists(bytes32 taskId)",
+  "error NotClient()",
+  "error NotAgent()",
+  "error NotFound(bytes32 taskId)",
+  "error WrongStatus(bytes32 taskId, uint8 status)",
+  "error DeadlinePassed()",
+  "error DeadlineNotPassed()",
+  "error GraceNotPassed()",
+]);

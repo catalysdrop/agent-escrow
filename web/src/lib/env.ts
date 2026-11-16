@@ -1,5 +1,5 @@
 import { isAddress, type Address, type Chain } from "viem";
-import { aevumFork, aevumTestnet, localAnvil } from "@aevum-kit/aevum";
+import { AGENT_ESCROW_AEVUM_ADDRESS, aevumFork, aevumTestnet, localAnvil } from "@aevum-kit/aevum";
 
 export type NetworkKey = "aevum" | "fork" | "local";
 
@@ -10,6 +10,8 @@ export interface Network {
   chain: Chain;
   /** Your Checkout on this network, if you deployed one. */
   checkout?: Address;
+  /** Your AgentEscrow on this network, if you deployed one. */
+  escrow?: Address;
   /** Only scan events from this block onward on the Activity page. */
   deployBlock?: bigint;
   /** Explorer links only make sense on the real testnet. */
@@ -26,6 +28,8 @@ const all: Record<NetworkKey, Network> = {
     label: "Aevum testnet",
     chain: aevumTestnet,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_AEVUM),
+    // Defaults to the deployed AgentEscrow so the Escrow page works without extra setup.
+    escrow: address(process.env.NEXT_PUBLIC_ESCROW_AEVUM) ?? AGENT_ESCROW_AEVUM_ADDRESS,
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM),
     hasExplorer: true,
   },
@@ -34,6 +38,7 @@ const all: Record<NetworkKey, Network> = {
     label: "Local fork",
     chain: aevumFork,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_FORK),
+    escrow: address(process.env.NEXT_PUBLIC_ESCROW_FORK),
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_FORK),
     hasExplorer: false,
   },
@@ -42,6 +47,7 @@ const all: Record<NetworkKey, Network> = {
     label: "Local anvil",
     chain: localAnvil,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_LOCAL),
+    escrow: address(process.env.NEXT_PUBLIC_ESCROW_LOCAL),
     deployBlock: undefined,
     hasExplorer: false,
   },
