@@ -236,10 +236,9 @@ cast wallet address --account aevum-deployer      # fund this address from the f
 
 - Contract on Aevum testnet (`44005`) with explorer links: see
   [Live deployment](#live-deployment).
-- Exact commit deployed: `6463f73` (contract) — the frontend is `d8b1bb3`.
+- Exact commit deployed: `926dcfb` (contract v2) — the frontend is `eecda3e`.
 - Demo: live URL https://agent-escrow.netlify.app + **2–3 minute demo video** (required at submit).
-  Video status: _to be recorded before submission (deadline 11 Dec 2026,
-  16:00 WITA)_.
+  Video: [AgentEscrow demo (2:04, Unlisted)](https://www.youtube.com/watch?v=V9U1uRjav_k) — recorded 16 Nov 2026, narrated slideshow of the live v2 demo.
 
 ## Build Fresh
 
