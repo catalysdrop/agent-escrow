@@ -1,0 +1,9 @@
+# Netlify config for the AgentEscrow web app.
+# Base directory is web/ (Next.js app); the repo root is a pnpm workspace
+# and Netlify reads pnpm-lock.yaml / pnpm-workspace.yaml from the root.
+[build]
+  base = "web"
+  command = "pnpm build"
+
+[build.environment]
+  NODE_VERSION = "22"
