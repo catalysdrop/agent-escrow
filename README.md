@@ -38,6 +38,8 @@ agent  ── markDelivered(taskId, proofHash) ──▶ AgentEscrow  (before de
 client ── confirmRelease(taskId) ──▶ AgentEscrow ──▶ agent gets paid
    ...or, if the client goes silent:
 agent  ── claimUnconfirmed(taskId) ──▶ AgentEscrow ──▶ agent gets paid (after deliveredAt + 1 day grace)
+   ...or, if the delivery is not good enough (within the 1-day grace period):
+client ── rejectDelivery(taskId) ──▶ AgentEscrow ──▶ escrow reopens, agent may deliver again
    ...or, if nothing was delivered in time:
 client ── refund(taskId) ──▶ AgentEscrow ──▶ client gets a full refund
 ```
@@ -58,6 +60,15 @@ Rules enforced on-chain, per escrow:
   `deliveredAt + GRACE_PERIOD` (1 day) — so a silent client can't stall the
   agent forever, and an agent can't claim before the client had a fair window
   to confirm or dispute.
+- `rejectDelivery` (client-only, while `Delivered` and inside the grace
+  period) reopens the escrow so the agent can deliver again before the
+  deadline. Without it, an agent could submit an empty proof and be paid
+  after the grace period even if the work is worthless. After the grace
+  period the agent's claim right is unconditional, so a client cannot
+  front-run a claim with a last-second rejection.
+- The recorded amount is what the contract actually received, not what the
+  client asked to lock — a fee-on-transfer token can never leave the escrow
+  promising more than it holds.
 - `taskId` is a random 32 bytes generated client-side; sequential ids could be
   claimed in advance. A task id can be used only once (`AlreadyExists`).
 - `ReentrancyGuard` + `SafeERC20` on all fund movements; the UI approves the

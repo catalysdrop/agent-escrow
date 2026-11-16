@@ -171,6 +171,10 @@ export default function EscrowPage() {
       setError("Enter a valid agent wallet address (0x…).");
       return;
     }
+    if (agentAddr.toLowerCase() === address.toLowerCase()) {
+      setError("The agent can't be your own address — escrowing to yourself locks funds for nothing.");
+      return;
+    }
     if (parsedAmount === null || parsedAmount <= 0n) {
       setError("Enter a valid amount greater than zero.");
       return;
@@ -284,6 +288,15 @@ export default function EscrowPage() {
             })
           : [];
       const descriptions = loadDescriptions();
+      // Chain time (from the head block) gates the action buttons: a skewed
+      // local clock must not hide Refund/Deliver/Claim. Falls back to local
+      // time if the block header can't be read.
+      let chainNow: bigint | null = null;
+      try {
+        chainNow = (await client!.getBlock({ blockNumber: head })).timestamp;
+      } catch {
+        chainNow = null;
+      }
       const items: EscrowView[] = [];
       ordered.forEach((l, i) => {
         const s = states[i]?.result as unknown as EscrowState | undefined;
@@ -296,7 +309,7 @@ export default function EscrowPage() {
           description: descriptions[taskIds[i]] ?? null,
         });
       });
-      return { from, head, grace, items };
+      return { from, head, grace, items, chainNow };
     },
   });
 
@@ -481,9 +494,12 @@ export default function EscrowPage() {
               <div className="step-dot">3</div>
               <div className="step-body">
                 <div className="step-top">
-                  <span className="step-title">Client confirms</span>
+                  <span className="step-title">Client confirms — or rejects</span>
                 </div>
-                <p className="step-who">Funds release to the agent. No delivery by the deadline means a refund.</p>
+                <p className="step-who">
+                  Funds release to the agent on confirm. Not satisfied? Reject within the 1-day grace period and the
+                  agent can deliver again; no delivery by the deadline means a refund.
+                </p>
               </div>
             </li>
             <li className="step">
@@ -562,6 +578,7 @@ export default function EscrowPage() {
               tokenSymbol={token.symbol}
               grace={grace}
               now={now}
+              chainNow={escrowsQuery.data?.chainNow ?? null}
               onActionDone={() => void escrowsQuery.refetch()}
             />
           ))
@@ -584,6 +601,7 @@ function EscrowCard({
   tokenSymbol,
   grace,
   now,
+  chainNow,
   onActionDone,
 }: {
   item: EscrowView;
@@ -593,6 +611,7 @@ function EscrowCard({
   tokenSymbol: string;
   grace: bigint;
   now: number;
+  chainNow: bigint | null;
   onActionDone: () => void;
 }) {
   const { net } = useNetwork();
@@ -606,13 +625,16 @@ function EscrowCard({
 
   const isClient = isConnected && address?.toLowerCase() === item.client.toLowerCase();
   const isAgent = isConnected && address?.toLowerCase() === item.agent.toLowerCase();
-  const expired = now > Number(item.deadline);
-  const claimReady = item.deliveredAt > 0n && BigInt(now) > item.deliveredAt + grace;
-  const claimIn = item.deliveredAt > 0n ? countdown(item.deliveredAt + grace, now) : null;
+  // Prefer chain time (head block) over the local clock for all gating, so a
+  // skewed clock can neither hide an action nor show one that would revert.
+  const nowUsed = chainNow !== null ? Number(chainNow) : now;
+  const expired = nowUsed > Number(item.deadline);
+  const claimReady = item.deliveredAt > 0n && BigInt(nowUsed) > item.deliveredAt + grace;
+  const claimIn = item.deliveredAt > 0n ? countdown(item.deliveredAt + grace, nowUsed) : null;
 
   async function send(
     label: string,
-    fn: "markDelivered" | "confirmRelease" | "refund" | "claimUnconfirmed",
+    fn: "markDelivered" | "rejectDelivery" | "confirmRelease" | "refund" | "claimUnconfirmed",
     args: [Hex, Hex] | [Hex],
   ) {
     if (!address) return;
@@ -680,7 +702,7 @@ function EscrowCard({
         <dt>Deadline</dt>
         <dd>
           {formatDate(item.deadline)} ·{" "}
-          {item.status === 1 ? countdown(item.deadline, now) : expired ? "expired" : "passed"}
+          {item.status === 1 ? countdown(item.deadline, nowUsed) : expired ? "expired" : "passed"}
         </dd>
         {item.status >= 2 && item.proof !== `0x${"0".repeat(64)}` && (
           <>
@@ -726,6 +748,17 @@ function EscrowCard({
             onClick={() => void send("release", "confirmRelease", [item.taskId])}
           >
             {busy === "release" ? "Check your wallet…" : "Confirm release"}
+          </button>
+        )}
+        {isClient && item.status === 2 && !claimReady && (
+          <button
+            type="button"
+            className="btn small secondary"
+            disabled={busy !== null}
+            title="Not satisfied with the delivery? Reject it within the 1-day grace period — the escrow reopens and the agent can deliver again before the deadline."
+            onClick={() => void send("reject", "rejectDelivery", [item.taskId])}
+          >
+            {busy === "reject" ? "Check your wallet…" : "Reject delivery"}
           </button>
         )}
         {isClient && item.status === 1 && expired && (

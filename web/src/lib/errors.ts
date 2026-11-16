@@ -20,6 +20,7 @@ export function explain(error: unknown): string {
       if (name === "DeadlinePassed") return "The deadline has already passed.";
       if (name === "DeadlineNotPassed") return "The deadline hasn't passed yet.";
       if (name === "GraceNotPassed") return "The grace period after delivery hasn't passed yet.";
+      if (name === "GracePassed") return "The grace period has already passed — the agent can claim now, rejection is closed.";
       if (name === "ZeroAmount") return "The amount must be more than zero.";
       const reason = revert.reason ?? "";
       if (/invalid signature/i.test(reason)) return "The signature doesn't match this order or amount. Sign again.";
@@ -28,7 +29,7 @@ export function explain(error: unknown): string {
       if (/allowance/i.test(reason)) return "The approval is lower than the order total. Approve again.";
       if (reason) return reason;
     }
-    if (/insufficient funds/i.test(error.message)) return "Not enough tQDAY for gas. Get some from the faucet, or use Gasless mode.";
+    if (/insufficient funds/i.test(error.message)) return "Not enough tQDAY for gas. Get some from the faucet.";
     return error.shortMessage;
   }
   return error.message;
