@@ -127,8 +127,8 @@ Get test tokens: join the [QDay Discord](https://discord.gg/bYPhjmrSfK),
 react ✅ in `#verify`, then `/faucet <your address>` — 1 tQDAY + 5 tUSD8,
 once per Discord account and once per address. Or https://faucet.qday.info.
 
-**Live demo:** https://classy-torte-713bd9.netlify.app (Netlify, deployed
-16 Nov 2026). **Deploying the web app yourself:** on Netlify, import the repo,
+**Live demo:** https://agent-escrow.netlify.app (Netlify, deployed
+16 Nov 2026, public). **Deploying the web app yourself:** on Netlify, import the repo,
 set **Base directory** to `web`, **Build command** `pnpm build`, **Node**
 `22`, and add `NEXT_PUBLIC_NETWORKS=aevum`,
 `NEXT_PUBLIC_ESCROW_AEVUM=<address>`,
@@ -221,7 +221,7 @@ cast wallet address --account aevum-deployer      # fund this address from the f
 - Contract on Aevum testnet (`44005`) with explorer links: see
   [Live deployment](#live-deployment).
 - Exact commit deployed: `6463f73` (contract) — the frontend is `d8b1bb3`.
-- Demo: live URL https://classy-torte-713bd9.netlify.app + **2–3 minute demo video** (required at submit).
+- Demo: live URL https://agent-escrow.netlify.app + **2–3 minute demo video** (required at submit).
   Video status: _to be recorded before submission (deadline 11 Dec 2026,
   16:00 WITA)_.
 
