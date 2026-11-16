@@ -17,14 +17,19 @@ Native AI Assistants**. Solo entry by [x24aiai](https://dorahacks.io/builder/x24
 
 | | |
 |---|---|
-| AgentEscrow | [`0x655a895477fBb38fB4A7c279cad04A4e218F284b`](https://explorer-test.qday.info/address/0x655a895477fBb38fB4A7c279cad04A4e218F284b) |
-| Deploy tx | [`0x71cf07ecd77f6c3d8dac65519d04901c659b64d07cee232f2f677bd5620664af`](https://explorer-test.qday.info/tx/0x71cf07ecd77f6c3d8dac65519d04901c659b64d07cee232f2f677bd5620664af) |
-| Deploy block | `3302809` |
-| Deploy cost | `0.00104` tQDAY |
+| AgentEscrow | [`0x54e833291455D68e944D178FBbbF3F7Ebb359046`](https://explorer-test.qday.info/address/0x54e833291455D68e944D178FBbbF3F7Ebb359046) |
+| Deploy tx | [`0x4d3d03351b8d3c1997da558c6fa89571cd9f3485b2890f381832082e7afd6b9c`](https://explorer-test.qday.info/tx/0x4d3d03351b8d3c1997da558c6fa89571cd9f3485b2890f381832082e7afd6b9c) |
+| Deploy block | `3308598` |
+| Deploy cost | `0.000969` tQDAY |
 | tUSD8 | [`0x456569838f1d43009A91ebA4263147Afd7233483`](https://explorer-test.qday.info/address/0x456569838f1d43009A91ebA4263147Afd7233483), 6 decimals |
 | Deployer (testnet-only wallet) | `0x58d56263dbe9c20aafb48adef1c21d66a13619aa` |
 | Deployed | 16 Nov 2026, after the hackathon kickoff (Build Fresh) |
-| Source at deploy | commit `6463f73` (`feat: AgentEscrow`) |
+| Source at deploy | commit `926dcfb` (`Audit fixes: rejectDelivery dispute path, net-received accounting, UI hardening`) |
+
+v1 (`0x655a…284b`, block `3302809`) was superseded by this v2 redeploy after a
+pre-submit security audit found one Medium (no dispute path for a bad
+delivery). The v1 demo escrow (0.5 tUSD8) stays locked in v1 until its
+deadline, when the client can refund it.
 
 Contract verification on the explorer isn't available yet, so the exact commit above
 is the source of truth — see [Submitting](#submitting).
@@ -87,7 +92,7 @@ Next.js app (wagmi + RainbowKit) with an **Escrow** page (`/escrow`):
 - **Create escrow:** agent address, amount in tUSD8, deadline in days,
   task description. Two wallet steps: approve exact amount, then create.
 - **Escrow list:** read from `EscrowCreated` events (chunked, from deploy block
-  `3302809`) with live state via `escrowOf`, auto-refresh every 30 s.
+  `3308598`) with live state via `escrowOf`, auto-refresh every 30 s.
 - **Role actions:** only the buttons your wallet is allowed to use appear —
   agent marks delivered (proof text → hash), client confirms or refunds,
   agent claims after the grace period (button shows a countdown until then).
@@ -129,8 +134,8 @@ make deploy-escrow-local                           # empty local chain + MockUSD
 ```bash
 cp web/.env.example web/.env.local
 #   NEXT_PUBLIC_NETWORKS=aevum
-#   NEXT_PUBLIC_ESCROW_AEVUM=0x655a895477fBb38fB4A7c279cad04A4e218F284b
-#   NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3302809
+#   NEXT_PUBLIC_ESCROW_AEVUM=0x54e833291455D68e944D178FBbbF3F7Ebb359046
+#   NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3308598
 make dev              # http://localhost:3000
 ```
 
@@ -143,7 +148,7 @@ once per Discord account and once per address. Or https://faucet.qday.info.
 set **Base directory** to `web`, **Build command** `pnpm build`, **Node**
 `22`, and add `NEXT_PUBLIC_NETWORKS=aevum`,
 `NEXT_PUBLIC_ESCROW_AEVUM=<address>`,
-`NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3302809`, and optionally
+`NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3308598`, and optionally
 `NEXT_PUBLIC_WC_PROJECT_ID` (WalletConnect, free at
 [cloud.reown.com](https://cloud.reown.com)). Keep the whole repo connected
 (not just `web/`): the app imports `packages/aevum` through the pnpm workspace.

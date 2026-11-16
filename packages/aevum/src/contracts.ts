@@ -42,10 +42,10 @@ export const checkoutAbi = parseAbi([
 ]);
 
 /** AgentEscrow deployed on Aevum testnet (chain 44005) for the Builder Challenge. */
-export const AGENT_ESCROW_AEVUM_ADDRESS: Address = "0x655a895477fBb38fB4A7c279cad04A4e218F284b";
+export const AGENT_ESCROW_AEVUM_ADDRESS: Address = "0x54e833291455D68e944D178FBbbF3F7Ebb359046";
 
 /** Block the AgentEscrow deploy transaction landed in (used as the event-scan start). */
-export const AGENT_ESCROW_AEVUM_DEPLOY_BLOCK = 3302809n;
+export const AGENT_ESCROW_AEVUM_DEPLOY_BLOCK = 3308598n;
 
 /** ABI of contracts/src/AgentEscrow.sol. */
 export const agentEscrowAbi = parseAbi([
