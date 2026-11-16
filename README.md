@@ -28,7 +28,7 @@ Native AI Assistants**. Solo entry by [x24aiai](https://dorahacks.io/builder/x24
 
 v1 (`0x655a…284b`, block `3302809`) was superseded by this v2 redeploy after a
 pre-submit security audit found one Medium (no dispute path for a bad
-delivery). The v1 demo escrow (0.5 tUSD8) stays locked in v1 until its
+delivery) — full report: [AUDIT.md](AUDIT.md). The v1 demo escrow (0.5 tUSD8) stays locked in v1 until its
 deadline, when the client can refund it.
 
 Contract verification on the explorer isn't available yet, so the exact commit above
